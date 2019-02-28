@@ -1,0 +1,246 @@
+---
+title: "Basics of Data Wrangling"
+author: "Rafael A. Irizarry"
+date: "2/28/2019"
+output:
+  ioslides_presentation:
+    fig_caption: no
+    fig_height: 5
+    fig_width: 6
+  beamer_presentation: default
+  slidy_presentation: default
+---
+
+```{r set up, message=FALSE, warning=FALSE, include=FALSE}
+library(tidyverse)
+library(dslabs)
+```
+
+## Introduction
+What is **data wrangling**?
+
+Data wrangling, sometimes referred to as data munging, is the process of transforming and mapping data from one "raw" data form into another format with the intent of making it more appropriate and valuable for a variety of downstream purposes (source [wikipedia](https://en.wikipedia.org/wiki/Data_wrangling))
+
+## Introduction
+The **dplyr** package introduces functions that perform the some of the most common operations in data wrangling and uses names for these functions that are relatively easy to remember. Throught this presentation we will see:
+
+- `mutate`
+- `filter`
+- `select`
+- The pipe `%>%`
+- `summarize`
+- `pull`
+- `group_by`
+
+And others (if there's time)
+
+## Introduction
+We will be using a dataset that contains US gun murder data by state for 2010. The dataset can be found in the `dslabs` package
+```{r murder dataset, echo=FALSE}
+data("murders")
+murders %>%
+  head(.) %>%
+  knitr::kable()
+```
+
+## Adding a colum with `mutate`
+
+The function `mutate` takes the data frame as a first argument and the name and values of the variable in the second using the convention `name = values`. So, we can compute murder rates with:
+
+```{r}
+murders <- mutate(murders, rate = total / population * 100000)
+```
+
+Notice that here we used `total` and `population` inside the function, which are variables in the data frame. This is one of **dplyr**’s main features. Functions in this package, such as mutate, know to look for variables in the data frame provided in the first argument. 
+
+## Adding a colum with `mutate`
+
+Here we can see the newly created column:
+
+```{r echo=FALSE}
+murders %>%
+  mutate(rate = round(rate, 2)) %>%
+  head(.) %>%
+  knitr::kable()
+```
+
+## Subsetting with `filter`
+Suppose that we want to filter the data table to only show the entries for which the murder rate is lower than 0.71. To do this, we can use the `filter` function
+
+```{r eval=FALSE}
+filter(murders, rate <= 0.71) 
+```
+
+```{r echo=FALSE}
+murders %>%
+  filter(rate <= 0.71) %>%
+  head(.,4) %>%
+  knitr::kable()
+```
+
+##  Selecting columns with `select`
+If we want to view just a few column, we can use the `select` function:
+
+```{r}
+new_table <- select(murders, state, region, rate)
+```
+
+```{r echo=FALSE}
+new_table %>%
+  mutate(rate = round(rate, 2)) %>%
+  head(., 4) %>%
+  knitr::kable()
+```
+
+##  Selecting columns with `select`
+Notice that we can filter the new data table using the `filter` function:
+
+```{r, eval = FALSE}
+filter(new_table, rate <= 0.71) 
+```
+
+```{r echo=FALSE}
+new_table %>%
+  filter(rate <= 0.71) %>%
+  head(.,4) %>%
+  knitr::kable()
+```
+
+## The pipe `%>%`
+
+With **dplyr** we can perform a series of operations, for example select and then filter, by sending the results of one function to another using what is called the pipe operator: `%>%`. Let us recreate what we have done so far using the pipe operator. Intuitively, this is what we want to do:
+
+$$
+\mbox{original data} \rightarrow \mbox{select} \rightarrow \mbox{filter} = \mbox{new_table}
+$$
+
+## The pipe `%>%`
+
+```{r eval=FALSE}
+murders %>% select(state, region, rate) %>% filter(rate <= 0.71) 
+```
+
+```{r echo=FALSE}
+murders %>% 
+  select(state, region, rate) %>% 
+  filter(rate <= 0.71) %>%
+  knitr::kable()
+```
+
+## The pipe `%>%`
+
+More examples of `%>%`
+```{r}
+16 %>% sqrt()
+```
+
+```{r}
+16 %>% sqrt() %>% log2()
+```
+
+```{r}
+16 %>% sqrt() %>% log(base = 2)
+```
+
+## Summarizing Data
+Summarizing data is a very important aspect of exploratory data analysis. The average and standard deviation are two examples of summary statistics. Some key functions in the **dplyr** package for summarizing data are:
+
+- `summarize`
+- `group_by`
+- `pull`
+
+Here we introduce the `heights` data set that can be found in the `dslabs` package. The dataset contains the sex and height of 1,050 individuals.
+
+## Summarizing Data: `summarize`
+The `summarize` function provides an intuitive way of summarizing data. We start with a simple example:
+
+```{r}
+s <- heights %>% 
+  filter(sex == "Female") %>%
+  summarize(average = mean(height), standard_deviation = sd(height))
+s
+```
+
+This takes our original data table as input, filters it to keep only females and then produces a new, summarized table with just the average and the standard deviation of heights.
+
+## Summarizing Data: `summarize`
+Notice that the resulting table is stored in `s`, thus we can access the components with the accessor `$`:
+
+```{r}
+s$average
+s$standard_deviation
+```
+
+## Summarizing Data: `summarize`
+We can compute any other summary that operates on vectors and returns a single value. Let us try another example:
+
+```{r}
+heights %>% 
+  filter(sex == "Female") %>%
+  summarize(median = median(height), 
+            minimum = min(height), 
+            maximum = max(height))
+```
+
+## Summarizing Data: `summarize`
+We can obtain these three values with just one line using the `quantiles` function; e.g. `quantile(x, c(0,0.5,1))`. However, the following code
+
+```{r eval = FALSE}
+heights %>% 
+  filter(sex == "Female") %>%
+  summarize(range = quantile(height, c(0, 0.5, 1))) 
+```
+
+returns the error: *Error: Column `range` must be length 1 (a summary value), not 3* 
+
+Why?
+
+## Summarizing Data: `pull`
+Most **dplyr** functions always return a data frame, even if the resulting calculation return a single number. Here is an example:
+
+```{r}
+us_murder_rate <- murders %>% 
+  summarize(rate = sum(total) / sum(population) * 100000)
+```
+```{r}
+us_murder_rate
+```
+```{r}
+class(us_murder_rate)
+```
+
+## Summarizing Data: `pull`
+In situations like these we can use the `pull` function to access the number:
+
+```{r}
+us_murder_rate <- murders %>% 
+  summarize(rate = sum(total) / sum(population) * 100000) %>%
+  pull()
+```
+which is now numeric
+```{r}
+class(us_murder_rate)
+```
+
+## Summarize Data: `group_by`
+
+Suppose it is of interest to compute the average height of males and females in the `heights` data. To do this, we need to split the data into males and females, and then compute the average. The functions `group_by` and `summarize` can be use to achieve this
+
+```{r eval=FALSE}
+heights %>% group_by(sex) 
+```
+```{r echo=FALSE}
+heights %>% slice(c(1,2,7,8)) %>% group_by(sex) 
+```
+
+## Summarize Data: `group_by`
+Let us do this:
+
+```{r}
+heights %>% 
+  group_by(sex) %>%
+  summarize(average = mean(height), standard_deviation = sd(height))
+```
+
+
+
