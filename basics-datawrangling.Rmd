@@ -224,7 +224,7 @@ class(us_murder_rate)
 
 ## Summarize Data: `group_by`
 
-Suppose it is of interest to compute the average height of males and females in the `heights` data. To do this, we need to split the data into males and females, and then compute the average. The functions `group_by` and `summarize` can be use to achieve this
+Suppose it is of interest to compute the average height of males and females in the `heights` data. To do this, we need to split the data into males and females, and then compute the average. The functions `group_by` and `summarize` can be use to achieve this. First, notice what happens when we use `group_by`:
 
 ```{r eval=FALSE}
 heights %>% group_by(sex) 
@@ -234,13 +234,75 @@ heights %>% slice(c(1,2,7,8)) %>% group_by(sex)
 ```
 
 ## Summarize Data: `group_by`
-Let us do this:
+When we summarize the data after grouping, this is what happens:
 
 ```{r}
 heights %>% 
   group_by(sex) %>%
   summarize(average = mean(height), standard_deviation = sd(height))
 ```
+
+Note that the `summarize` function applies the summarization to each group. 
+
+## Summarize Data: `group_by`
+Here is another example:
+
+```{r}
+murders %>% 
+  group_by(region) %>%
+  summarize(median_rate = median(rate))
+```
+
+## Sorting Data Frames
+
+Suppose it is of interest to sort a data frame by different columns. For example; What are the states with the smallest population size in the `murder` dataset? For this, we can use the `arrange` function:
+
+```{r}
+murders %>% 
+  arrange(population) %>% head() 
+```
+
+Notice the ordering.
+
+## Sorting Data Frames
+
+What are the states with the biggest murder rates in the `murder` dataset?
+
+```{r}
+murders %>% 
+  arrange(desc(rate)) %>% head()
+```
+
+Notice the ordering now. 
+
+## Sorting Data Frames
+We can also sort data by more than one column. For example, let us sort by region and then order, within region, by murder rate:
+
+```{r}
+murders %>% 
+  arrange(region, rate) %>% 
+  head() 
+```
+
+What would we need to do if we want to sort `rate` in an descending order?
+
+## Sorting Data Frames
+Finally, we can access the top, say, ten murder rates using the `top-n` function:
+
+```{r}
+murders %>% top_n(5, rate)
+```
+
+Note that the rows are sorted by `rate`, only filtered.
+
+# Any Questions?
+
+
+
+
+
+
+
 
 
 
