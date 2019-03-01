@@ -1,0 +1,319 @@
+---
+title: "Vizualization with ggplot2"
+author: "Rafael A. Irizarry"
+date: "3/1/2019"
+output:
+  ioslides_presentation:
+    fig_caption: no
+    fig_height: 4
+    fig_width: 7
+  beamer_presentation: default
+  slidy_presentation: default
+---
+
+```{r setup, include=FALSE}
+#knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(dslabs)
+library(ggthemes)
+library(ggrepel)
+
+data(murders)
+```
+
+## Introduction
+
+- There are also other packages for creating graphics such as `grid` and `lattice`, but `ggplot2` provides intuitive and powerful tools to create plots. 
+- `ggplot2` breaks plots into components in a way that permits beginners to create relatively complex and aesthetically pleasing plots using syntax that is intuitive and comparatively easy to remember.
+- It provides intuitive tools to create hundreds of different plots by using the [grammar of graphics](https://www.springer.com/us/book/9780387245447) (the gg in `ggplot2`)
+- Make use of the `ggplot2` [cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)!
+
+## Introduction
+- Motivation: You will know how to create this plot
+
+```{r ggplot-example-plot, fig.cap = "Murder totals versus population size for US states.", echo=FALSE}
+r <- murders %>% 
+  summarize(pop=sum(population), tot=sum(total)) %>% 
+  mutate(rate = tot/pop*10^6) %>% .$rate
+
+murders %>% ggplot(aes(x = population/10^6, y = total, label = abb)) +  
+  geom_abline(intercept = log10(r), lty=2, col="darkgrey") +
+  geom_point(aes(color=region), size = 3) +
+  geom_text_repel() + 
+  scale_x_log10() +
+  scale_y_log10() +
+  xlab("Populations in millions (log scale)") + 
+  ylab("Total number of murders (log scale)") +
+  ggtitle("US Gun Murders in 2010") +
+  scale_color_discrete(name="Region") +
+  theme_economist()
+```
+
+## The Components of a Graph
+
+The main three components of a graph are:
+
+- **Data**: The US murders data table is being summarized. We refer to this as the **data** component.
+- **Geometry**: The plot above is a scatterplot. This is referred to as the geometry component.
+- **Aesthetic mapping**: The plot uses several visual cues to represent the information provided by the dataset. The two most important cues in this plot are the point positions in the x-axis and y-axis, which represent population size and the total number of murders respectively. Each point represents a different observation which implies we need to *map* the data to the visual cue. Color is another visual cue that represents region and also needs a map. We refer to this as the **aesthetic mappings** component. How we define the mapping depends on what **geometry** we are using.
+
+## `ggplot2` objects: A Blank Slate
+- Start by loading the `dslabs` package.
+
+```{r}
+ggplot(data = murders)
+```
+
+## `ggplot2` objects: A Blank Slate
+
+- We can also use the pipe operator:
+
+```{r}
+murders %>% ggplot()
+```
+
+## `ggplot2` objects: A Blank Slate
+
+- Why is it "blank"?
+
+## `ggplot2` objects: A Blank Slate
+
+- Why is it "blank"?
+
+The code renders a blank slate since no geometry has been defined
+
+## `ggplot2` objects: A Blank Slate
+
+- Why is it "blank"?
+
+The code renders a blank slate since no geometry has been defined
+
+- We can define a `ggplot2` object like this:
+```{r}
+p <- ggplot(data = murders)
+class(p)
+```
+
+- Finally, we can see the object with:
+
+```{r eval=FALSE}
+print(p)
+p 
+```
+
+## Geometries
+
+- We create graphs by adding *layers* 
+- Layes can define geometries, summary statistics, styles, among other things
+- We use `+` to add layers
+- In general, a line of code looks like this:
+
+
+>> DATA %>% `ggplot()` + LAYER 1 + LAYER 2 + ... + LAYER N
+
+- Suppose we want to create a scatter plot. Taking a look at the [cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf) we see that we need to use `geom_point` 
+
+- Note that geometry function names follow this pattern: `geom` and the name of the geometry connected by an underscore.
+
+## Aesthetic Mappings 
+
+- The function `aes` connects data with what we see on the graph. 
+- We refer to this as the **aesthetic mappings**.
+- This example produces a scatterplot of total murders versus population in millions:
+```{r eval=FALSE}
+murders %>% ggplot() + 
+  geom_point(aes(x = population/10^6, y = total))
+```
+
+- We can drop the `x =` and `y =` if we wanted to since these are the first and second expected arguments
+
+- We can also add a layer to the `p` object that was defined before as `p <- ggplot(data = murders)`
+
+## Aesthetic Mappings
+
+```{r}
+p + geom_point(aes(population/10^6, total))
+```
+
+
+## Layers
+
+- Recall the figure we are aiming to recreate:
+
+```{r echo=FALSE}
+r <- murders %>% 
+  summarize(pop=sum(population), tot=sum(total)) %>% 
+  mutate(rate = tot/pop*10^6) %>% .$rate
+
+murders %>% ggplot(aes(x = population/10^6, y = total, label = abb)) +  
+  geom_abline(intercept = log10(r), lty=2, col="darkgrey") +
+  geom_point(aes(color=region), size = 3) +
+  geom_text_repel() + 
+  scale_x_log10() +
+  scale_y_log10() +
+  xlab("Populations in millions (log scale)") + 
+  ylab("Total number of murders (log scale)") +
+  ggtitle("US Gun Murders in 2010") +
+  scale_color_discrete(name="Region") +
+  theme_economist()
+```
+
+- A second layer we must add is the label to each point to identify the state.
+
+## Layers
+- The `geom_label` and `geom_text` functions allow us to add text to plots
+```{r}
+p + geom_point(aes(population/10^6, total)) +
+  geom_text(aes(population/10^6, total, label = abb))
+```
+- We have successfully added a second layer to the plot
+
+## Tinkering with Arguments
+- Each geometry has arguments other than `aes` and `data`. For example, we can change the size of points:
+```{r}
+p + geom_point(aes(population/10^6, total), size = 3) +
+  geom_text(aes(population/10^6, total, label = abb))
+```
+
+## Tinkering with Arguments
+- Its hard to see the labels. We can use the `nudge_x` argument to move the text slightly:
+```{r}
+p + geom_point(aes(population/10^6, total), size = 3) +
+  geom_text(aes(population/10^6, total, label = abb), nudge_x = 1)
+```
+
+## Global vs Local Aesthethic Mappings
+- Notice that we defined the same aesthetic mapping twice:
+
+```{r eval = FALSE}
+p + geom_point(aes(population/10^6, total)) +
+  geom_text(aes(population/10^6, total, label = abb))
+```
+
+- If we define a mapping in ggplot, then all the geometries that are added as layers will default to this mapping. We redefine `p`:
+
+```{r}
+p <- murders %>% ggplot(aes(population/10^6, total, label = abb))
+```
+
+- Then we can simply write the following code:
+
+```{r eval = FALSE}
+p + geom_point(size = 3) + 
+  geom_text(nudge_x = 1.5)
+```
+
+## Global vs Local Aesthethic Mappings
+- Here is the resulting plot:
+
+```{r echo = FALSE}
+p + geom_point(size = 3) + 
+  geom_text(nudge_x = 1.5)
+```
+
+- Why are the `size` and `nudge_x` arguments not defined withing the `ggplot` function?
+
+## Global vs Local Aesthethic Mappings
+- We can override the global mapping by defining a new mapping within each layer. Here is an example:
+
+```{r}
+p + geom_point(size = 3) +  
+  geom_text(aes(x = 10, y = 800, label = "Hello there!"))
+```
+
+## Scales
+- Recall that the desired *scales* are in log-scales. Since this is not default, we need to change it. We can do this with `scale_x_continuous` or with `scale_x_log10`.
+- Here is the code:
+
+```{r eval= FALSE}
+p + geom_point(size = 3) +  
+  geom_text(nudge_x = 0.05) + 
+  scale_x_continuous(trans = "log10") +
+  scale_y_continuous(trans = "log10") 
+```
+
+```{r eval= FALSE}
+p + geom_point(size = 3) +  
+  geom_text(nudge_x = 0.05) + 
+  scale_x_log10() +
+  scale_y_log10() 
+```
+
+- `nudge_x` is made smaller due to the log-scale
+
+## Scales
+
+- Here is the resulting plot:
+
+```{r}
+p + geom_point(size = 3) +  
+  geom_text(nudge_x = 0.05) + 
+  scale_x_log10() +
+  scale_y_log10() 
+```
+
+## Labels & Titles
+
+- The [cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf) reveals how to add labels and titles.
+- Here is the code
+
+```{r eval = FALSE}
+p + geom_point(size = 3) +  
+  geom_text(nudge_x = 0.05) + 
+  scale_x_log10() +
+  scale_y_log10() +
+  xlab("Populations in millions (log scale)") + 
+  ylab("Total number of murders (log scale)") +
+  ggtitle("US Gun Murders in 2010")
+```
+
+- We are almost done!
+
+## Labels & Titles
+
+- Here is the resulting plot
+
+```{r echo = FALSE}
+p + geom_point(size = 3) +  
+  geom_text(nudge_x = 0.05) + 
+  scale_x_log10() +
+  scale_y_log10() +
+  xlab("Populations in millions (log scale)") + 
+  ylab("Total number of murders (log scale)") +
+  ggtitle("US Gun Murders in 2010")
+```
+
+- All we have left to do is add color, a legend and optional changes to the style.
+
+## Categories as Colors
+
+- We can change the color of the data points using the `col` argument in the `geom_point` function. 
+- For simplicity, let us redefined `p` as:
+
+```{r eval = FALSE}
+p <-  murders %>% ggplot(aes(population/10^6, total, label = abb)) +   
+        geom_text(nudge_x = 0.05) + 
+        scale_x_log10() +
+        scale_y_log10() +
+        xlab("Populations in millions (log scale)") + 
+        ylab("Total number of murders (log scale)") +
+        ggtitle("US Gun Murders in 2010")
+```
+
+- For example, here is the code to make the data points blue:
+
+```{r eval = FALSE}
+p + geom_point(size = 3, color ="blue")
+```
+
+## Categories as Colors
+
+
+
+
+
+
+
+
+
+
