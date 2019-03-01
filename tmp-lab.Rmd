@@ -1,0 +1,32 @@
+---
+title: "UPR-RP tmp lab"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+dat <- read.csv("data/mouse-tmp.csv")
+```
+
+## Bimodal distribution of weight
+
+```{r}
+dat %>%
+  ggplot(aes(weight)) + 
+  geom_histogram(color = "white", bins = 30)
+```
+
+## Simpson's paradox
+
+```{r}
+dat %>%
+  ggplot(aes(dbp, sbp)) + 
+  geom_point() +
+  geom_smooth(se=F, method = "lm")
+
+dat %>%
+  ggplot() + 
+  geom_point(aes(dbp, sbp, color = factor(cage))) +
+  geom_smooth(aes(dbp, sbp, color = factor(cage)), se=F, method = "lm") +
+  geom_smooth(aes(dbp, sbp), se=F, method = "lm", col = "black")
+```
