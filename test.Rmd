@@ -1,0 +1,200 @@
+Variable Description
+DNA Fragment of chromosome 21 integrated in parent mouse
+(A=141G6; B=152F7; C=230E8; D=285E6).
+Line Family line.
+Transgenic Whether the mouse contains the extra DNA (1)
+or not (0).
+Sex Sex of mouse (1=male; 0=female).
+Age Age of mouse (in days) at time of weighing.
+Weight Weight of mouse in grams, to the nearest tenth of a gram.
+Cage Number of the cage in which the mouse lived
+
+
+```{r}
+library(tidyverse)
+dat <- read_csv("data/mouse.csv")
+dat <- mutate(dat, 
+              fragment = recode(DNA, "1"="141G6", "2"="152F7", "3"="230E8", "4"="285E6")) %>%
+  mutate(fragment = ifelse(tg == 1, fragment, "No trisomy")) 
+
+```
+
+Compute the means  ...add an outlier or two to no trisomy
+
+Make a boxplot
+```{r}
+dat %>% ggplot(aes(fragment, weight)) + geom_boxplot()
+```
+
+relevel fragment to have control first
+
+```{r}
+dat <- mutate(dat, fragment = factor(fragment)) %>% mutate(fragment = relevel(fragment, ref = "No trisomy"))
+dat %>% ggplot(aes(fragment, weight)) + geom_boxplot()
+```
+
+
+add points
+
+```{r}
+dat %>% ggplot(aes(fragment, weight)) + geom_boxplot() + 
+  geom_point()
+```
+
+add jitter
+
+```{r}
+dat %>% ggplot(aes(fragment, weight)) + geom_boxplot() + 
+  geom_jitter()
+```
+
+smaller spread, alpha-blend 
+
+```{r}
+dat %>% ggplot(aes(fragment, weight)) +
+  geom_boxplot() + 
+  geom_jitter(width = 0.1, alpha = 0.5)
+```
+
+a unexpected result is revealed. bimodal
+
+ridge plots
+
+
+histograms
+```{r}
+filter(dat, fragment == "No trisomy") %>%
+  ggplot(aes(weight)) +
+  geom_histogram()
+```
+
+avoid warning and make it nice
+
+```{r}
+filter(dat, fragment == "No trisomy") %>%
+  ggplot(aes(weight)) +
+  geom_histogram(binwidth = 1, color = "black")
+```
+
+density
+```{r}
+filter(dat, fragment == "No trisomy") %>%
+  ggplot(aes(weight)) +
+  geom_density()
+```
+
+make it nice
+
+```{r}
+filter(dat, fragment == "No trisomy") %>%
+  ggplot(aes(weight)) +
+  geom_density(fill = 1, alpha = 0.5) + 
+  xlim(c(19,45))
+```
+
+ridge plots
+
+```{r}
+library(ggridges)
+dat %>% 
+  ggplot(aes(weight, fragment)) +
+  geom_density_ridges() 
+```
+Avoid overal 
+
+```{r}
+library(ggridges)
+dat %>% 
+  ggplot(aes(weight, fragment)) +
+  geom_density_ridges(scale = 0.9) 
+```
+
+sex?
+
+```{r}
+dat %>% ggplot(aes(fragment, weight, color = sex)) +
+  geom_boxplot(width = 0.5, color = "grey") + 
+  geom_jitter(width = 0.1, alpha = 0.5)
+```
+
+
+sex is a number! let's change it to charcater or factor.
+
+```{r}
+dat <- mutate(dat, mutate(sex = ifelse(sex == 1, "Male", "Female"))
+
+)
+dat %>% ggplot(aes(fragment, weight, color = sex)) +
+  geom_boxplot(width = 0.5, color = "grey") + 
+  geom_jitter(width = 0.1, alpha = 0.5)
+```
+
+Facet
+
+```{r}
+dat %>% ggplot(aes(fragment, weight, color = sex)) +
+  geom_boxplot(width = 0.5, color = "grey") + 
+  geom_jitter(width = 0.1, alpha = 0.5) + 
+  facet_grid(.~sex)
+```
+
+Themes
+
+```{r}
+dat %>% ggplot(aes(fragment, weight, color = sex)) +
+  geom_boxplot(width = 0.5, color = "grey") + 
+  geom_jitter(width = 0.1, alpha = 0.5) + 
+  facet_grid(.~sex) + 
+  theme_bw()
+```
+
+Cage effect?
+Are males and females caged together?
+
+```{r}
+with(dat, table(cage, sex))
+```
+
+Is cage counfounded?
+
+```{r}
+dat %>% 
+  filter(sex == "Female") %>%
+  mutate(cage = factor(cage)) %>%
+  ggplot(aes(cage, weight, color = fragment)) +
+  geom_boxplot(width = 0.5, color = "grey") + 
+  geom_jitter(width = 0.1, alpha = 0.5) + 
+  theme_bw()
+```
+
+Order by meaningful value
+
+
+```{r}
+dat %>% 
+  filter(sex == "Female") %>%
+  mutate(cage = factor(cage)) %>%
+  mutate(cage = reorder(cage, weight, median)) %>%
+  ggplot(aes(cage, weight, color = fragment)) +
+  geom_boxplot(width = 0.5, color = "grey") + 
+  geom_jitter(width = 0.1, alpha = 0.5) + 
+  theme_bw()
+```
+
+```{r}
+dat %>% 
+  filter(sex == "Male") %>%
+  mutate(cage = factor(cage)) %>%
+  mutate(cage = reorder(cage, weight, median)) %>%
+  ggplot(aes(cage, weight, color = fragment)) +
+  geom_boxplot(width = 0.5, color = "grey") + 
+  geom_jitter(width = 0.1, alpha = 0.5) + 
+  theme_bw()
+```
+
+
+```{r}
+filter(dat, sex == "Female") %>% 
+  lm(weight ~ fragment + factor(cage), data = .) %>% summary()
+```
+
