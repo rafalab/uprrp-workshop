@@ -45,17 +45,3 @@ dat %>% group_by(fragment, sex) %>%
 ### adding residual
 ind <- sample(which(dat$tg==0), 1)
 dat$weight[ind] <- dat$weight[ind]*100
-
-## adding simpons paradox
-dat <- mutate(dat, 
-              fragment = recode(DNA, "1"="141G6", "2"="152F7", "3"="230E8", "4"="285E6")) %>%
-  mutate(fragment = ifelse(tg == 1, fragment, "No trisomy")) 
-
-res <- dat %>% group_by(fragment) %>% 
-  summarize(avg = mean(weight),
-            se = sd(weight)/n())
-
-res %>% ggplot(aes(fragment, avg)) + 
-  geom_errorbar(aes(ymin = avg - se, ymax = avg+se), width = 0.25)+
-  geom_bar(stat = "identity", width=0.5, fill=4, col = 1) +
-  xlab("") + ylab("Outcome")
