@@ -3,10 +3,16 @@
 Material used in the classes and workshop by Rafael Irizarry
 
 You can download a copy onto your computer using
+   * git clone
+   * or, if you don't have git, clicking...
 
-git clone
+## Downloading the repo using git clone
+Here are the steps to clone the repository:
+1. Open the terminal or command line in your computer and set the directory to where you want to save the repo (e.g, the Desktop or Document folders)
+2. Copy and paste the url of this web page
+3. Type __git clone url__ into your terminal or command line. The word __url__ is a place holder for the url of this webpage
+4. After a few seconds you should have all the data in this repo
 
-or, if you don't have git, clicking...
 
 ## Outline and learning objectives
 
@@ -22,14 +28,14 @@ The course intermixes short lectures with assessments. The two main topics of th
   
 2. Data visualization principles. After a 30 minute lecutre and 30 minute lab students will be able to
 
-    a. Create publication ready figures using __ggplot__. 
-    b. Determine the more appropriate type of plot to convey a biological result.
-    c. Avoid commonly made plots that ofuscate or distract.
+    * Create publication ready figures using __ggplot__. 
+    * Determine the more appropriate type of plot to convey a biological result.
+    * Avoid commonly made plots that ofuscate or distract.
   
 3. Data wrangling. The coding approach we present in the previous two sections work best with tidy data. In Biology it is common to receive data that is not in tidy format. In fact, often the majority of data analysis time is spent of _wrangling_ the data into a format that facilitates analysis. We will describe some of the tools that are available to do this.
 
-    a. Wrangle a jagged array stored in an excel file into a tidy data table.
-    b. Join tables to combine data from multiple datasets into one table.
+    * Wrangle a jagged array stored in an excel file into a tidy data table.
+    * Join tables to combine data from multiple datasets into one table.
     
 
 
