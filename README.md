@@ -14,10 +14,10 @@ The course intermixes short lectures with assessments. The two main topics of th
 
 1. Basic data manipulation. After a 15 minute lecture and 15 minute lab, students will be able to:
 
-    a. Identify if data is tidy or not.
-    b. Import a csv file into data frame in R.
-    c. Select, filter and change columns on data frame with __dplyr__ functions.
-    d. Stratify and summarize data with __dplyr__ functions.
+    * Identify if data is tidy or not.
+    * Import a csv file into data frame in R.
+    * Select, filter and change columns on data frame with __dplyr__ functions.
+    * Stratify and summarize data with __dplyr__ functions.
   
   
 2. Data visualization principles. After a 30 minute lecutre and 30 minute lab students will be able to
