@@ -8,7 +8,7 @@ We will be using the tidyverse in this lab. So let's start by loading it.
 library(tidyverse)
 ```
 
-Your lab conducted an experiment in which four different fragments of chromosome 21 were integrated into mice. The four parts are denoted with _141G6_, _152F7_, _230E8_ and _285E6_. The mice were bred resulting in dozens of transgenic mice. The DNA fragment is not always inherted so some mice have the extra copy and others don't. We are interested in determining if any of these fragments result in an increase in weight, a characteristic associated with trisomic mice.
+Your lab conducted an experiment in which four different fragments of chromosome 21 were integrated into mice. The four parts are denoted with _141G6_, _152F7_, _230E8_ and _285E6_. The mice were bred resulting in dozens of  transgenic mice. The DNA fragment is not always inherted so some mice have the extra copy and others don't. We are interested in determining if any of these fragments result in an increase in weight, a characteristic associated with trisomic mice.
 
 The data can be loaded like this.
 
@@ -267,14 +267,15 @@ dat %>% ggplot(aes(fragment, weight, color = sex)) +
 
 This plot is quite informative. First it shows strong evidence that the 152F7 has an effect on weight, especially on females.
 
-Cage effect?
+### Cage effect?
+
 Are males and females caged together?
 
 ```{r}
 with(dat, table(cage, sex))
 ```
 
-Is cage counfounded?
+Is cage counfounded with fragment? Make boxplots for the females.
 
 ```{r}
 dat %>% 
@@ -286,7 +287,7 @@ dat %>%
   theme_bw()
 ```
 
-Order by meaningful value
+When order by meaningful values.
 
 ```{r}
 dat %>% 
@@ -299,23 +300,63 @@ dat %>%
   theme_bw()
 ```
 
+Take a closer look. Compare just controls and 152F7. Are trisomic mice higher within each cage? Is what we are seeing really a cage effect?
 ```{r}
 dat %>% 
-  filter(sex == "Male") %>%
+  filter(sex == "Female" & fragment %in% c("No trisomy", "152F7")) %>%
   mutate(cage = factor(cage)) %>%
   mutate(cage = reorder(cage, weight, median)) %>%
   ggplot(aes(cage, weight, color = fragment)) +
-  geom_boxplot(width = 0.5, color = "grey") + 
+  geom_boxplot(aes(color = fragment), width = 0.5) + 
   geom_jitter(width = 0.1, alpha = 0.5) + 
   theme_bw()
 ```
 
+### Confounding
+
+For the female mice compute the correlation between blood pressure and weight.
 
 ```{r}
-filter(dat, sex == "Female") %>% 
-  lm(weight ~ fragment , data = .) %>% summary()
-filter(dat, sex == "Female") %>% 
-  lm(weight ~ fragment , data = .) %>% aov() %>% summary()
-
+dat %>% filter(sex == "Female") %>%
+  summarize(cor(weight, bp))
 ```
+
+The correlation is negative. Does this make sense? Confirm with a plot that there are not outliers driving this result.
+
+```{r}
+dat %>% filter(sex == "Female") %>%
+  ggplot(aes(weight, bp)) + 
+  geom_point(alpha = 0.5)
+```
+
+
+The plot does confirm that higher weight mice have, on average slightly lower blood pressure. But we do see clusters. What could these be? Use color to decipher what cuases the clustering.
+
+```{r}
+dat %>% filter(sex == "Female") %>%
+  ggplot(aes(weight, bp, color = fragment)) + 
+  geom_point(alpha = 0.5)
+```
+
+
+Now use faceting to plot the scatter plot for each fragment separately.
+
+```{r}
+dat %>% filter(sex == "Female") %>%
+  ggplot(aes(weight, bp)) + 
+  geom_point(alpha = 0.5) + 
+  facet_wrap(fragment ~ .)
+```
+
+We note that the correlation appears positive in each group. Use `group_by` and `summarize` to corroborate this.
+
+```{r}
+dat %>% filter(sex == "Female") %>%
+  group_by(fragment) %>%
+  summarize(cor = cor(weight, bp))
+```
+
+Note: Cases in which the overall correlation is the opposite sign as when looking strata is referred to as Simpsons Paradox.
+
+
 
