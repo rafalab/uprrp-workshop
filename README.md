@@ -5,7 +5,7 @@ Material used in the classes and workshop by Rafael Irizarry
 ## Downloading the data
 You can download all the data in the repository by clicking the green button on the top right of this page that says __Clone or download__. You can also clone the repository by using __git clone__. Here are the steps to do that:
 
-1. Open the terminal or command line in your computer and set the directory to where you want to save the repo (e.g, the Desktop or Document folders)
+1. Open the terminal or command line in your computer and set the directory to where you want to save the repo (e.g, the Desktop or Documents folders)
 2. Copy and paste the url of this web page
 3. Type __git clone url__ into your terminal or command line. The word __url__ is a place holder for the url of this webpage
 4. After a few seconds you should have all the data in this repo
