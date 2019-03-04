@@ -13,7 +13,7 @@ You can download all the data in the repository by clicking the green button on 
 
 ## Outline and learning objectives
 
-The course intermixes short lectures with assessments. The two main topics of this week are data visualization and data wrangling. For the assessments we will be answering biologically relevant questions and preparing publication ready figures using R code. The assessments will be carried out on a table with less than 500 rows, which we use to illustrate important principles that can then be extrapolated to "Big Data".
+The course intermixes short lectures with assessments. The two main topics of this week are data visualization and data wrangling. For the assessments we will be answering biologically relevant questions and preparing publication ready figures using R code. The assessments will be carried out on a table with over 500 rows, which we use to illustrate important principles that can then be extrapolated to "Big Data".
 
 1. Basic data manipulation. After a 15 minute lecture and 15 minute lab, students will be able to:
 
