@@ -1,0 +1,193 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+# Data Wrangling: How to Clean your Data
+
+We will be using the `tidyverse` in this lab. So let's start by loading it.
+
+```{r}
+library(tidyverse)
+```
+
+Suppose your lab conducts an experiment in which four different fragments of chromosome 21 were integrated into mice. The four parts are denoted with _141G6_, _152F7_, _230E8_ and _285E6_. The mice were bred resulting in dozens of  transgenic mice. The DNA fragment is not always inherted so some mice have the extra copy and others don't. Furthermore, suppose the data was stored as two datasets: **weight.csv** and **blood-pressure.csv**. The goal of this lecture is to clean and merge the datasets in order to end up with this:
+
+```{r echo = FALSE}
+load("rdas/mouse.rda")
+as_tibble(dat) %>% head() %>% knitr::kable()
+```
+
+The columns included in this table are the following:
+
+  - _DNA_: Fragment of chromosome 21 integrated in parent mouse (1=141G6; 2=152F7; 3=230E8; 4=285E6).
+  - _line_: Family line.
+  - _tg_ - Whether the mouse contains the extra DNA (1) or not (0).
+  - _sex_:  Sex of mouse (1=male; 0=female).
+  - _age_: Age of mouse (in days) at time of weighing.
+  - _weight_: Weight of mouse in grams, to the nearest tenth of a gram.
+  - _bp_: Blood pressure of the mosue.
+  - _cage_: Number of the cage in which the mouse lived
+
+Let's start by loading the data and looking at it
+
+```{r message=TRUE, warning=TRUE}
+bp     <- read.csv("data/blood-pressure.csv")
+weight <- read.csv("data/weight.csv")
+```
+
+Now we can look at the data. Here is a sample of **blood-pressure.csv**:
+
+```{r echo=FALSE}
+as_tibble(bp) %>% head() %>% knitr::kable()
+```
+
+Each row in this dataset correspond to a mouse. The first three columns describe the family line of the mouse and the last columns corresponds to a blood pressure measurement. Here is a sample of **weight.csv**:
+
+```{r echo=FALSE}
+as_tibble(weight[,1:6]) %>% head() %>% knitr::kable()
+```
+
+The column names in this table correspond to the characteristics of mice at each DNA fragment. Here we show a sample of observations that have the _141G6_ fragment. Try looking at **weight.csv** for yourself and notice the other columns. We need to clean a lot of data! 
+
+## Wrangling BP dataset
+
+Let's start with **blood-pressure.csv**. The first thing we want to do is to create a new variable that is the combination of the first three columns of the table. We will call this new variable `line`
+
+```{r}
+bp <- bp %>%
+      mutate(line = paste(line.1, line.2, line.3, sep = "-"))
+```
+
+```{r echo=FALSE}
+bp %>% head() %>% knitr::kable()
+```
+
+Notice that the `line` data in **weight.csv** has a # symbol at the beginning. Let's add that:
+
+```{r}
+bp <- bp %>%
+      mutate(line = paste("#", line, sep = ""))
+```
+
+```{r echo=FALSE}
+bp %>% head() %>% knitr::kable()
+```
+
+**QUESTION**: Why would we want these to be the same?
+
+Now, remove the columns `line.1`, `line.2`, and `line.3` from the data. **HINT**: Use the function `select`.
+
+```{r answer 1}
+bp <- bp %>% select(line, bp)
+```
+
+```{r echo = FALSE}
+bp %>% head() %>% knitr::kable()
+```
+
+## Wrangling Weight dataset
+
+Let's now move onto **weight.csv**. Recall that the names in this table correspond to the characteristics of mice at each DNA fragment. You can see this by printing the column names:
+
+```{r}
+colnames(weight)
+```
+
+To start easy, let's consider only the data regarding the _141G6_ fragment. How do you do this?
+
+```{r answer 2, eval = FALSE}
+weight %>% 
+  select(contains("141G6"))
+```
+
+```{r, echo = FALSE}
+weight %>% 
+  select(contains("141G6")) %>%
+  head() %>%
+  knitr::kable()
+```
+
+Any ideas on how to proceed? Do we need to do much more? No! Notice that all the data regarding this DNA fragment is in that table. All we need to do know is change the name of the variables and create a new variable `DNA`. Try doing this by yourself. **Hint** Use `rename` and `mutate`:
+
+```{r answer 3, eval=FALSE}
+weight %>% 
+  select(contains("141G6")) %>%
+  rename(tg = "X141G6.tg",
+         sex    = "X141G6.sex",
+         age    = "X141G6.age",
+         weight = "X141G6.weight",
+         cage   = "X141G6.cage",
+         line   = "X141G6.line") %>%
+  mutate(DNA = "141G6")
+```
+
+```{r, echo=FALSE}
+weight %>% 
+  select(contains("141G6")) %>%
+  rename(tg = "X141G6.tg",
+         sex    = "X141G6.sex",
+         age    = "X141G6.age",
+         weight = "X141G6.weight",
+         cage   = "X141G6.cage",
+         line   = "X141G6.line") %>%
+  mutate(DNA = "141G6") %>%
+  head() %>%
+  knitr::kable()
+```
+
+**TE QUEDASTE AQUI**
+
+
+```{r include = FALSE}
+fragments <- c("141G6", "152F7", "230E8", "285E6")
+
+
+# -- Use this instead
+# weight %>%
+#   select(contains("141G6")) %>%
+#   rename(tg = paste("X", fragments[x], ".tg", sep = ""),
+#          sex    = paste("X", fragments[x], ".sex", sep = ""),
+#          age    = paste("X", fragments[x], ".age", sep = ""),
+#          weight = paste("X", fragments[x], ".weight", sep = ""),
+#          cage   = paste("X", fragments[x], ".cage", sep = ""),
+#          line   = paste("X", fragments[x], ".line", sep = "")) %>%
+#   mutate(DNA = fragments[x])
+
+res <- lapply(seq_along(fragments), function(x){
+  x=1
+  tmp <- weight %>%
+            select(contains(fragments[x])) %>%
+            na.omit() %>%
+            gather(key=DNA, line, 1) %>%
+            mutate(DNA = fragments[x]) %>%
+            rename(tg     = paste("X", fragments[x], ".tg", sep = ""),
+                   sex    = paste("X", fragments[x], ".sex", sep = ""),
+                   age    = paste("X", fragments[x], ".age", sep = ""),
+                   weight = paste("X", fragments[x], ".weight", sep = ""),
+                   cage   = paste("X", fragments[x], ".cage", sep = ""))
+})
+
+
+res <- do.call(rbind, res)
+res
+```
+
+
+<!-- # More material -->
+
+<!-- **QUESTION**: Are the number of observations for each DNA fragment the same? **Hint**: You can use the `select` function -->
+
+```{r include=FALSE, eval=FALSE}
+weight %>%
+  select(contains("line")) %>%
+  gather() %>%
+  group_by(key) %>%
+  filter(value != "") %>%
+  summarize(cant = n())
+```
+
+
