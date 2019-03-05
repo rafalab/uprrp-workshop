@@ -44,7 +44,7 @@ $$
 $$
 
 Note that the names are 1, 2, 3, 4. Let's change these to the actual names
-1=141G6; 2=152F7; 3=230E8; 4=285E6. Create a new column called `fragment` with the actual fragment names. Hint: Use the `recode` funtion. 
+1=141G6; 2=152F7; 3=230E8; 4=285E6. Create a new column called `fragment` with the actual fragment names. Hint: Use the `recode` function. 
 
 ```{r}
 dat <- mutate(dat, fragment = recode(DNA, 
