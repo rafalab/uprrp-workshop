@@ -73,11 +73,9 @@ weights of mice with the other four fragmets. Determine which columns
 tells us the fragment of the mouse and determine the number of mouse in
 each group? Hint: use the *count* function.
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 Note that the names are 1, 2, 3, 4. Let’s change these to the actual
 names 1=141G6; 2=152F7; 3=230E8; 4=285E6. Create a new column called
@@ -134,20 +132,16 @@ dat %>% group_by(DNA) %>% summarize(freq = n())
 Now compute the average and standard error in each of the four groups
 and the control. Hint: Use `group_by` and `summarize`.
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 Bonus: Is the above difference statistically signficant at the 0.05
 level?
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 This is what the dynamite plot would look like:
 
@@ -166,40 +160,32 @@ only shows the average and we learn little about the distribution of the
 data. Use the *geom\_boxplot* function to show the five number summary.
 Do you see a problem? What is it?
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 We know that a 1000 gram mice does not exist. In fact 100 grams is
 already a huge mouse. Use filter to show the data from the mice weighing
 more than 100 grams.
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 What are the weights?
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 An unfortunate common practice is to use the number 999 to denote
 missing data. The recommended practice is to acutely type NA. Use the
 fitler function to remove all the rows with these missing values, then
 remake the figure and recompute the averages and standard errors.
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 This makes much more sense.
 
@@ -411,19 +397,15 @@ This plot is quite informative. First it shows strong evidence that the
 
 Are males and females caged together?
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 Is cage counfounded with fragment? Make boxplots for the females.
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 When order by meaningful values.
 
@@ -443,58 +425,46 @@ dat %>%
 Take a closer look. Compare just controls and 152F7. Are trisomic mice
 higher within each cage? Is what we are seeing really a cage effect?
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 ### Confounding
 
 For the female mice compute the correlation between blood pressure and
 weight.
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 The correlation is negative. Does this make sense? Confirm with a plot
 that there are not outliers driving this result.
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 The plot does confirm that higher weight mice have, on average slightly
 lower blood pressure. But we do see clusters. What could these be? Use
 color to decipher what cuases the clustering.
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 Now use faceting to plot the scatter plot for each fragment separately.
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 We note that the correlation appears positive in each group. Use
 `group_by` and `summarize` to corroborate this.
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 Note: Cases in which the overall correlation is the opposite sign as
 when looking strata is referred to as Simpsons Paradox.
