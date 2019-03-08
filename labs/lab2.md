@@ -28,7 +28,7 @@ the datasets in order to end up with this:
 
 The columns included in this table are the following:
 
-  - *DNA* dd: Fragment of chromosome 21 integrated in parent mouse
+  - *DNA* : Fragment of chromosome 21 integrated in parent mouse
     (1=141G6; 2=152F7; 3=230E8; 4=285E6).
   - *line* : Family line.
   - *tg* : Whether the mouse contains the extra DNA (1) or not (0).
@@ -201,6 +201,14 @@ $$
     "line")`? What about `weight %>% right_join(bp, by = "line")`? Do we
     end up with the same results? **Hint**: What are the row numbers of
     the tables? Use `anyNA` and `na.omit`
+
+$$
+
+$$
+
+4.  In lab 1 we mutated the variable `fragment` if the the mouse did not
+    have the DNA fragments of interest. This dataset does not have that.
+    Write code to achieve this:
 
 $$
 

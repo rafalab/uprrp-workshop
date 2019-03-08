@@ -212,20 +212,20 @@ res <- lapply(seq_along(fragments), function(x){
                    weight = paste(fragments[x], ".weight", sep = ""),
                    cage   = paste(fragments[x], ".cage", sep = ""),
                    line   = paste(fragments[x], ".line", sep = "")) %>%
-            mutate(DNA = fragments[x])
+            mutate(fragment = fragments[x])
 })
 
 weight <- do.call(rbind, res)
 ```
 
-| line       | tg | sex | age | weight | cage | DNA   |
-| :--------- | -: | --: | --: | -----: | ---: | :---- |
-| \#4-77-117 |  1 |   1 | 119 |   31.2 |    7 | 141G6 |
-| \#4-77-118 |  1 |   1 | 119 |   28.4 |    7 | 141G6 |
-| \#4-77-119 |  1 |   1 | 119 |   30.8 |    7 | 141G6 |
-| \#4-77-120 |  1 |   1 | 119 |   30.3 |    7 | 141G6 |
-| \#4-77-121 |  1 |   1 | 119 |   30.5 |    7 | 141G6 |
-| \#4-77-122 |  1 |   1 | 119 |   31.4 |    7 | 141G6 |
+| line       | tg | sex | age | weight | cage | fragment |
+| :--------- | -: | --: | --: | -----: | ---: | :------- |
+| \#4-77-117 |  1 |   1 | 119 |   31.2 |    7 | 141G6    |
+| \#4-77-118 |  1 |   1 | 119 |   28.4 |    7 | 141G6    |
+| \#4-77-119 |  1 |   1 | 119 |   30.8 |    7 | 141G6    |
+| \#4-77-120 |  1 |   1 | 119 |   30.3 |    7 | 141G6    |
+| \#4-77-121 |  1 |   1 | 119 |   30.5 |    7 | 141G6    |
+| \#4-77-122 |  1 |   1 | 119 |   31.4 |    7 | 141G6    |
 
 We are almost done. Recall from above that `DNA` is encoded as:
 
@@ -238,17 +238,17 @@ We can use the function `recode` to achieve this:
 
 ``` r
 weight <- weight %>%
-            mutate(DNA = recode(DNA, "141G6"="1", "152F7"="2", "230E8"="3", "285E6"="4"))
+            mutate(DNA = recode(fragment, "141G6"="1", "152F7"="2", "230E8"="3", "285E6"="4"))
 ```
 
-| line       | tg | sex | age | weight | cage | DNA |
-| :--------- | -: | --: | --: | -----: | ---: | :-- |
-| \#4-77-117 |  1 |   1 | 119 |   31.2 |    7 | 1   |
-| \#4-77-118 |  1 |   1 | 119 |   28.4 |    7 | 1   |
-| \#4-77-119 |  1 |   1 | 119 |   30.8 |    7 | 1   |
-| \#4-77-120 |  1 |   1 | 119 |   30.3 |    7 | 1   |
-| \#4-77-121 |  1 |   1 | 119 |   30.5 |    7 | 1   |
-| \#4-77-122 |  1 |   1 | 119 |   31.4 |    7 | 1   |
+| line       | tg | sex | age | weight | cage | fragment | DNA |
+| :--------- | -: | --: | --: | -----: | ---: | :------- | :-- |
+| \#4-77-117 |  1 |   1 | 119 |   31.2 |    7 | 141G6    | 1   |
+| \#4-77-118 |  1 |   1 | 119 |   28.4 |    7 | 141G6    | 1   |
+| \#4-77-119 |  1 |   1 | 119 |   30.8 |    7 | 141G6    | 1   |
+| \#4-77-120 |  1 |   1 | 119 |   30.3 |    7 | 141G6    | 1   |
+| \#4-77-121 |  1 |   1 | 119 |   30.5 |    7 | 141G6    | 1   |
+| \#4-77-122 |  1 |   1 | 119 |   31.4 |    7 | 141G6    | 1   |
 
 Finally, the last step is to merge the two datasets. Recall that we want
 to use the `line` variable to merge the tables. Give it a try, call the
@@ -257,17 +257,17 @@ new table `dat`. **Hint**: Use the `left_join` function
 ``` r
 dat <- weight %>%
           left_join(bp, by = "line") %>%
-          select(DNA, line, tg, sex, age, weight, bp, cage)
+          select(DNA, line, tg, sex, age, weight, bp, cage, fragment)
 ```
 
-| DNA | line       | tg | sex | age | weight |    bp | cage |
-| :-- | :--------- | -: | --: | --: | -----: | ----: | ---: |
-| 1   | \#4-77-117 |  1 |   1 | 119 |   31.2 | 126.8 |    7 |
-| 1   | \#4-77-118 |  1 |   1 | 119 |   28.4 | 124.3 |    7 |
-| 1   | \#4-77-119 |  1 |   1 | 119 |   30.8 | 124.7 |    7 |
-| 1   | \#4-77-120 |  1 |   1 | 119 |   30.3 | 123.1 |    7 |
-| 1   | \#4-77-121 |  1 |   1 | 119 |   30.5 | 123.4 |    7 |
-| 1   | \#4-77-122 |  1 |   1 | 119 |   31.4 | 125.5 |    7 |
+| DNA | line       | tg | sex | age | weight |    bp | cage | fragment |
+| :-- | :--------- | -: | --: | --: | -----: | ----: | ---: | :------- |
+| 1   | \#4-77-117 |  1 |   1 | 119 |   31.2 | 126.8 |    7 | 141G6    |
+| 1   | \#4-77-118 |  1 |   1 | 119 |   28.4 | 124.3 |    7 | 141G6    |
+| 1   | \#4-77-119 |  1 |   1 | 119 |   30.8 | 124.7 |    7 | 141G6    |
+| 1   | \#4-77-120 |  1 |   1 | 119 |   30.3 | 123.1 |    7 | 141G6    |
+| 1   | \#4-77-121 |  1 |   1 | 119 |   30.5 | 123.4 |    7 | 141G6    |
+| 1   | \#4-77-122 |  1 |   1 | 119 |   31.4 | 125.5 |    7 | 141G6    |
 
 # Exercises
 
@@ -284,8 +284,8 @@ sapply(dat, class)
 
     ##         DNA        line          tg         sex         age      weight 
     ## "character" "character"   "numeric"   "numeric"   "numeric"   "numeric" 
-    ##          bp        cage 
-    ##   "numeric"   "numeric"
+    ##          bp        cage    fragment 
+    ##   "numeric"   "numeric" "character"
 
 Note that the varible `tg` is `numeric` but it only takes on either 0 or
 1. We can convert this to either a character or a factor:
@@ -366,4 +366,15 @@ weight %>%
 bp %>% 
   left_join(weight, by = "line") %>%
   anyNA()
+```
+
+4.  In lab 1 we mutated the variable `fragment` if the the mouse did not
+    have the DNA fragments of interest. This dataset does not have that.
+    Write code to achieve this:
+
+<!-- end list -->
+
+``` r
+dat <- dat %>%
+          mutate(fragment == ifelse(tg == 0, "No trisomy", fragment))
 ```

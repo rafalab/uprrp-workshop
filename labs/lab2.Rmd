@@ -175,3 +175,11 @@ $$
 
 
 $$
+
+4. In lab 1 we mutated the variable `fragment` if the the mouse did not have the DNA fragments of interest. This dataset does not have that. Write code to achieve this:
+
+$$
+
+
+
+$$

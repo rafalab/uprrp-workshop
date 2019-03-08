@@ -161,7 +161,7 @@ res <- lapply(seq_along(fragments), function(x){
                    weight = paste(fragments[x], ".weight", sep = ""),
                    cage   = paste(fragments[x], ".cage", sep = ""),
                    line   = paste(fragments[x], ".line", sep = "")) %>%
-            mutate(DNA = fragments[x])
+            mutate(fragment = fragments[x])
 })
 
 weight <- do.call(rbind, res)
@@ -184,7 +184,7 @@ We can use the function `recode` to achieve this:
 
 ```{r}
 weight <- weight %>%
-            mutate(DNA = recode(DNA, "141G6"="1", "152F7"="2", "230E8"="3", "285E6"="4"))
+            mutate(DNA = recode(fragment, "141G6"="1", "152F7"="2", "230E8"="3", "285E6"="4"))
 ```
 
 ```{r echo = FALSE}
@@ -198,7 +198,7 @@ Finally, the last step is to merge the two datasets. Recall that we want to use 
 ```{r}
 dat <- weight %>%
           left_join(bp, by = "line") %>%
-          select(DNA, line, tg, sex, age, weight, bp, cage)
+          select(DNA, line, tg, sex, age, weight, bp, cage, fragment)
 ```
 
 ```{r echo=FALSE}
@@ -206,9 +206,6 @@ dat %>%
   head() %>%
   knitr::kable()
 ```
-
-
-
 
 
 # Exercises 
@@ -280,4 +277,13 @@ bp %>%
   left_join(weight, by = "line") %>%
   anyNA()
 ```
+
+4. In lab 1 we mutated the variable `fragment` if the the mouse did not have the DNA fragments of interest. This dataset does not have that. Write code to achieve this:
+
+```{r}
+dat <- dat %>%
+          mutate(fragment == ifelse(tg == 0, "No trisomy", fragment))
+```
+
+
 
