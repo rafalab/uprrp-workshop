@@ -26,14 +26,14 @@ as_tibble(dat) %>% head() %>% knitr::kable()
 
 The columns included in this table are the following:
 
-  - _DNA_: Fragment of chromosome 21 integrated in parent mouse (1=141G6; 2=152F7; 3=230E8; 4=285E6).
-  - _line_: Family line.
-  - _tg_ - Whether the mouse contains the extra DNA (1) or not (0).
-  - _sex_:  Sex of mouse (1=male; 0=female).
-  - _age_: Age of mouse (in days) at time of weighing.
+  - _DNA_   : Fragment of chromosome 21 integrated in parent mouse (1=141G6; 2=152F7; 3=230E8; 4=285E6).
+  - _line_  : Family line.
+  - _tg_    : Whether the mouse contains the extra DNA (1) or not (0).
+  - _sex_   :  Sex of mouse (1=male; 0=female).
+  - _age_   : Age of mouse (in days) at time of weighing.
   - _weight_: Weight of mouse in grams, to the nearest tenth of a gram.
-  - _bp_: Blood pressure of the mosue.
-  - _cage_: Number of the cage in which the mouse lived
+  - _bp_    : Blood pressure of the mosue.
+  - _cage_  : Number of the cage in which the mouse lived
 
 Let's start by loading the data and looking at it
 
@@ -72,14 +72,11 @@ bp %>% head() %>% knitr::kable()
 
 Notice that the `line` data in **weight.csv** has a # symbol at the beginning. Let's add that:
 
-```{r}
-bp <- bp %>%
-      mutate(line = paste("#", line, sep = ""))
-```
+$$
 
-```{r echo=FALSE}
-bp %>% head() %>% knitr::kable()
-```
+
+
+$$
 
 **Question 1**: Why would we want these to be the same? 
 

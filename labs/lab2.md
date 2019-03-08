@@ -28,15 +28,15 @@ the datasets in order to end up with this:
 
 The columns included in this table are the following:
 
-  - *DNA*: Fragment of chromosome 21 integrated in parent mouse
+  - *DNA* dd: Fragment of chromosome 21 integrated in parent mouse
     (1=141G6; 2=152F7; 3=230E8; 4=285E6).
-  - *line*: Family line.
-  - *tg* - Whether the mouse contains the extra DNA (1) or not (0).
-  - *sex*: Sex of mouse (1=male; 0=female).
-  - *age*: Age of mouse (in days) at time of weighing.
+  - *line* : Family line.
+  - *tg* : Whether the mouse contains the extra DNA (1) or not (0).
+  - *sex* : Sex of mouse (1=male; 0=female).
+  - *age* : Age of mouse (in days) at time of weighing.
   - *weight*: Weight of mouse in grams, to the nearest tenth of a gram.
-  - *bp*: Blood pressure of the mosue.
-  - *cage*: Number of the cage in which the mouse lived
+  - *bp* : Blood pressure of the mosue.
+  - *cage* : Number of the cage in which the mouse lived
 
 Let’s start by loading the data and looking at it
 
@@ -99,36 +99,22 @@ bp <- bp %>%
 Notice that the `line` data in **weight.csv** has a \# symbol at the
 beginning. Let’s add that:
 
-``` r
-bp <- bp %>%
-      mutate(line = paste("#", line, sep = ""))
-```
+$$
 
-| line.1 | line.2 | line.3 |    bp | line      |
-| -----: | -----: | :----- | ----: | :-------- |
-|     12 |     14 | 1      | 118.3 | \#12-14-1 |
-|     12 |     14 | 2      | 123.3 | \#12-14-2 |
-|     12 |     14 | 3      | 116.3 | \#12-14-3 |
-|     12 |     14 | 4      | 125.4 | \#12-14-4 |
-|     12 |     14 | 5      | 119.3 | \#12-14-5 |
-|     12 |     14 | 6      | 121.9 | \#12-14-6 |
+$$
 
 **Question 1**: Why would we want these to be the same?
 
-> > > > 
+$$
 
-> > > > 
-
-> > > > 
+$$
 
 Now, remove the columns `line.1`, `line.2`, and `line.3` from the data.
 **HINT**: Use the function `select`.
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 ## Wrangling Weight dataset
 
@@ -150,11 +136,9 @@ colnames(weight)
 To start easy, let’s consider only the data regarding the *141G6*
 fragment. How do you do this? **Hint**: Use `select` and `contains`
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 Any ideas on how to proceed? Do we need to do much more?
 
@@ -163,19 +147,15 @@ table. All we need to do know is change the name of the variables and
 create a new variable `DNA`. Try doing this by yourself. **Hint**: Use
 `rename` and `mutate`:
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 Now, repeat this procedure for all DNA fragments. **Hint**: Use loops
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 We are almost done. Recall from above that `DNA` is encoded as:
 
@@ -195,32 +175,26 @@ Finally, the last step is to merge the two datasets. Recall that we want
 to use the `line` variable to merge the tables. Give it a try, call the
 new table `dat`. **Hint**: Use the `left_join` function
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 # Exercises
 
 1.  Check the variable types of each column. Does it make sense? Should
     we change the variable type of any of the columns?
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 2.  Compute the number of mice in each DNA fragment group. Are the
     number of observations the same? **Hint**: Use `group_by` and
     `summarize`
 
-> 
+$$
 
-> 
-
-> 
+$$
 
 3.  Above we used `weight %>% left_join(bp, by = "line")` to merge the
     two tables. What happens when you run `bp %>% left_join(weight, by =
@@ -228,8 +202,6 @@ new table `dat`. **Hint**: Use the `left_join` function
     end up with the same results? **Hint**: What are the row numbers of
     the tables? Use `anyNA` and `na.omit`
 
-> 
+$$
 
-> 
-
->
+$$
